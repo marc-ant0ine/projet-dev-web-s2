@@ -1,13 +1,10 @@
 <?php
-// ============================================================
-//  Connexion PDO — MaisonSmart
-//  Modifier les constantes selon votre configuration WampServer
-// ============================================================
+
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'maison_smart');
 define('DB_USER', 'root');
-define('DB_PASS', '');          // WampServer : mot de passe vide par défaut
+define('DB_PASS', '');          // MampServer : mot de passe vide par défaut
 define('DB_CHARSET', 'utf8mb4');
 
 function getDB(): PDO {
