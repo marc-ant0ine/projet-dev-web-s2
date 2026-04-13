@@ -1,4 +1,4 @@
-<?php // footer.php ?>
+<?php  ?>
 <footer class="site-footer">
     <div class="footer-inner">
         <span class="site-logo-sm">Maison<span>Smart</span></span>
