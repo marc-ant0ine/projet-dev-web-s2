@@ -1,7 +1,7 @@
 <?php
-// ============================================================
-//  index.php — MaisonSmart  (page principale, 4 modules)
-// ============================================================
+
+//  index.php   page principale
+
 session_start();
 require_once 'db.php';
 
@@ -19,7 +19,7 @@ $allowed = $access[$role] ?? ['info'];
 
 $pdo = getDB();
 
-// ── Données module Information ──────────────────────────────
+
 $infoObjets = $pdo->query(
     'SELECT o.id, o.nom, o.type, o.unite, p.nom AS piece
      FROM objets_connectes o
@@ -28,7 +28,6 @@ $infoObjets = $pdo->query(
      ORDER BY o.nom'
 )->fetchAll();
 
-// ── Données module Visualisation ────────────────────────────
 $dernieresMesures = $pdo->query(
     'SELECT d.objet_id, o.nom, p.nom AS piece, o.type, o.unite,
             d.valeur, d.statut, d.enregistre_le
@@ -60,7 +59,7 @@ $statsGlobales = $pdo->query(
          WHERE type_conso='eau' AND jour = CURDATE())                        AS conso_eau"
 )->fetch();
 
-// ── Données module Gestion ──────────────────────────────────
+
 $pieces = $pdo->query(
     'SELECT p.id, p.nom,
             (SELECT d.valeur FROM donnees_capteurs d
@@ -78,7 +77,7 @@ $accesLog = $pdo->query(
     'SELECT * FROM acces ORDER BY enregistre_le DESC LIMIT 10'
 )->fetchAll();
 
-// ── Données module Administration ───────────────────────────
+
 if (in_array('admin', $allowed)) {
     $users       = $pdo->query('SELECT * FROM utilisateurs ORDER BY role, nom')->fetchAll();
     $objetsAdmin = $pdo->query(
@@ -101,7 +100,7 @@ if (in_array('admin', $allowed)) {
 
 <main class="dashboard">
 
-    <!-- ═══ NAVIGATION MODULES ════════════════════════════ -->
+ 
     <nav class="mod-nav">
         <button class="mod-btn active" data-mod="info">
             <span class="mod-icon">&#9432;</span> Information
@@ -123,16 +122,14 @@ if (in_array('admin', $allowed)) {
         <?php endif; ?>
     </nav>
 
-    <!-- ═══════════════════════════════════════════════════ -->
-    <!-- MODULE INFORMATION                                  -->
-    <!-- ═══════════════════════════════════════════════════ -->
+
     <section class="module active" id="mod-info">
         <div class="section-header">
             <h2>Objets connectés — accès libre</h2>
             <p class="section-sub">Consultez les appareils de la maison sans vous connecter.</p>
         </div>
 
-        <!-- Filtres (au moins 2 comme demandé dans le cahier des charges) -->
+
         <div class="filters-bar">
             <div class="filter-group">
                 <label for="f-type">Type d'appareil</label>
@@ -188,9 +185,7 @@ if (in_array('admin', $allowed)) {
         <?php endif; ?>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════ -->
-    <!-- MODULE VISUALISATION                                -->
-    <!-- ═══════════════════════════════════════════════════ -->
+    
     <?php if (in_array('visu', $allowed)): ?>
     <section class="module" id="mod-visu">
         <div class="section-header">
@@ -218,7 +213,7 @@ if (in_array('admin', $allowed)) {
             </div>
         </div>
 
-        <!-- Graphique consommation -->
+       
         <div class="chart-card">
             <h3>Consommation électrique — 7 derniers jours (kWh)</h3>
             <div class="chart-bars" id="chart-bars">
@@ -238,7 +233,7 @@ if (in_array('admin', $allowed)) {
             </div>
         </div>
 
-        <!-- Tri + cards capteurs -->
+   
         <div class="tri-bar">
             <label for="tri-capteurs">Trier les capteurs :</label>
             <select id="tri-capteurs" onchange="applySorting()">
@@ -274,9 +269,7 @@ if (in_array('admin', $allowed)) {
     </section>
     <?php endif; ?>
 
-    <!-- ═══════════════════════════════════════════════════ -->
-    <!-- MODULE GESTION                                      -->
-    <!-- ═══════════════════════════════════════════════════ -->
+   
     <?php if (in_array('gestion', $allowed)): ?>
     <section class="module" id="mod-gestion">
         <div class="section-header">
