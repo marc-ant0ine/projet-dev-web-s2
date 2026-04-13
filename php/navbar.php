@@ -1,5 +1,5 @@
 <?php
-// navbar.php — inclure dans chaque page
+
 $role   = $_SESSION['role']   ?? 'visiteur';
 $prenom = $_SESSION['prenom'] ?? null;
 ?>
