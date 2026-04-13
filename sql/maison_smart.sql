@@ -1,14 +1,9 @@
--- ============================================================
---  MaisonSmart — Base de données
---  Importer dans phpMyAdmin ou via : mysql -u root -p < maison_smart.sql
--- ============================================================
+
 
 CREATE DATABASE IF NOT EXISTS maison_smart CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE maison_smart;
 
--- ---------------------------------------------------------------
--- Table : utilisateurs
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS utilisateurs (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     nom         VARCHAR(100) NOT NULL,
@@ -21,18 +16,14 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- ---------------------------------------------------------------
--- Table : pieces
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS pieces (
     id      INT AUTO_INCREMENT PRIMARY KEY,
     nom     VARCHAR(100) NOT NULL,
     etage   TINYINT DEFAULT 0
 );
 
--- ---------------------------------------------------------------
--- Table : objets_connectes
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS objets_connectes (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     nom         VARCHAR(150) NOT NULL,
@@ -44,9 +35,7 @@ CREATE TABLE IF NOT EXISTS objets_connectes (
     FOREIGN KEY (piece_id) REFERENCES pieces(id) ON DELETE SET NULL
 );
 
--- ---------------------------------------------------------------
--- Table : donnees_capteurs  (historique des mesures)
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS donnees_capteurs (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     objet_id    INT NOT NULL,
@@ -56,9 +45,7 @@ CREATE TABLE IF NOT EXISTS donnees_capteurs (
     FOREIGN KEY (objet_id) REFERENCES objets_connectes(id) ON DELETE CASCADE
 );
 
--- ---------------------------------------------------------------
--- Table : consommation  (énergie & eau par jour)
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS consommation (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     objet_id    INT NOT NULL,
@@ -68,9 +55,7 @@ CREATE TABLE IF NOT EXISTS consommation (
     FOREIGN KEY (objet_id) REFERENCES objets_connectes(id) ON DELETE CASCADE
 );
 
--- ---------------------------------------------------------------
--- Table : acces  (journal des entrées/sorties)
--- ---------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS acces (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     personne    VARCHAR(150) NOT NULL,
@@ -79,16 +64,12 @@ CREATE TABLE IF NOT EXISTS acces (
     enregistre_le DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- ---------------------------------------------------------------
--- Données initiales — pièces
--- ---------------------------------------------------------------
+
 INSERT INTO pieces (nom, etage) VALUES
 ('Salon', 0), ('Cuisine', 0), ('Garage', 0),
 ('Chambre principale', 1), ('Chambre enfant', 1), ('Salle de bain', 1);
 
--- ---------------------------------------------------------------
--- Données initiales — objets connectés
--- ---------------------------------------------------------------
+
 INSERT INTO objets_connectes (nom, type, piece_id, unite) VALUES
 ('Thermostat salon',        'confort',        1, '°C'),
 ('Capteur CO₂ salon',       'securite',       1, 'ppm'),
@@ -105,9 +86,7 @@ INSERT INTO objets_connectes (nom, type, piece_id, unite) VALUES
 ('Capteur fuite eau',       'securite',       6, '%'),
 ('Alarme intrusion',        'securite',       1, 'actif');
 
--- ---------------------------------------------------------------
--- Données initiales — mesures capteurs (7 derniers jours)
--- ---------------------------------------------------------------
+
 INSERT INTO donnees_capteurs (objet_id, valeur, statut, enregistre_le) VALUES
 (1, 21.5, 'ok',    NOW() - INTERVAL 0 DAY),
 (1, 20.8, 'ok',    NOW() - INTERVAL 1 DAY),
@@ -123,9 +102,7 @@ INSERT INTO donnees_capteurs (objet_id, valeur, statut, enregistre_le) VALUES
 (13, 99,  'alert', NOW()),
 (14, 1,   'ok',    NOW());
 
--- ---------------------------------------------------------------
--- Données initiales — consommation (7 derniers jours)
--- ---------------------------------------------------------------
+
 INSERT INTO consommation (objet_id, type_conso, valeur, jour) VALUES
 (9, 'energie', 4.2,  CURDATE() - INTERVAL 6 DAY),
 (9, 'energie', 3.8,  CURDATE() - INTERVAL 5 DAY),
@@ -142,18 +119,14 @@ INSERT INTO consommation (objet_id, type_conso, valeur, jour) VALUES
 (12,'eau',     25.0, CURDATE() - INTERVAL 1 DAY),
 (12,'eau',     10.5, CURDATE());
 
--- ---------------------------------------------------------------
--- Données initiales — journal d'accès
--- ---------------------------------------------------------------
+
 INSERT INTO acces (personne, porte, statut, enregistre_le) VALUES
 ('Jean Dupont',      'Entrée principale', 'autorise', NOW() - INTERVAL 8  HOUR),
 ('Marie Dupont',     'Entrée principale', 'autorise', NOW() - INTERVAL 3  HOUR),
 ('Inconnu',          'Garage',            'alerte',   NOW() - INTERVAL 22 HOUR),
 ('Livreur',          'Portail',           'autorise', NOW() - INTERVAL 5  HOUR);
 
--- ---------------------------------------------------------------
--- Données initiales — utilisateurs (mdp = "Motdepasse1")
--- ---------------------------------------------------------------
+
 INSERT INTO utilisateurs (nom, prenom, mail, mdp, naissance, role, statut) VALUES
 ('Dupont', 'Jean',   'jean@maison.fr',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1985-03-12', 'admin',    'actif'),
 ('Dupont', 'Marie',  'marie@maison.fr',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1988-07-24', 'complexe', 'actif'),
