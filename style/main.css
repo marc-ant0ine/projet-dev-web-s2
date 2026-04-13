@@ -1,7 +1,4 @@
-/* ============================================================
-   main.css — MaisonSmart
-   Variables, reset, composants réutilisables
-   ============================================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
@@ -51,7 +48,7 @@ body {
     flex-direction: column;
 }
 
-/* ── Header ──────────────────────────────────── */
+
 .site-header {
     background: var(--c-surface);
     border-bottom: 0.5px solid var(--c-border);
@@ -99,7 +96,7 @@ body {
     gap: 6px;
 }
 
-/* ── Footer ──────────────────────────────────── */
+
 .site-footer {
     margin-top: auto;
     border-top: 0.5px solid var(--c-border);
@@ -118,7 +115,7 @@ body {
 .site-logo-sm { font-weight: 600; font-size: 14px; color: var(--c-text); }
 .site-logo-sm span { color: var(--c-green); }
 
-/* ── Boutons ──────────────────────────────────── */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -159,7 +156,7 @@ body {
 .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: var(--radius-sm); }
 .btn-full { width: 100%; justify-content: center; }
 
-/* ── Badges ──────────────────────────────────── */
+
 .badge {
     display: inline-block;
     font-size: 11px;
@@ -172,7 +169,7 @@ body {
 .badge-alert { background: var(--c-red-bg);   color: var(--c-red-dk); }
 .badge-off   { background: var(--c-gray-bg);  color: var(--c-gray-dk); }
 
-/* ── Role pills ──────────────────────────────── */
+
 .role-pill {
     display: inline-block;
     font-size: 11px;
@@ -185,7 +182,7 @@ body {
 .role-pill.simple   { background: var(--c-amber-bg); color: var(--c-amber-dk); }
 .role-pill.visiteur { background: var(--c-gray-bg); color: var(--c-gray-dk); }
 
-/* ── Formulaires ─────────────────────────────── */
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -223,7 +220,7 @@ body {
 .req { color: var(--c-red); }
 .hint { font-size: 12px; color: var(--c-hint); }
 
-/* ── Alertes formulaire ─────────────────────── */
+
 .alert {
     padding: 10px 14px;
     border-radius: var(--radius-md);
@@ -233,7 +230,7 @@ body {
 .alert-error { background: var(--c-red-bg); color: var(--c-red-dk); border: 0.5px solid var(--c-red); }
 .alert-success { background: var(--c-green-bg); color: var(--c-green-dk); }
 
-/* ── Table ───────────────────────────────────── */
+
 .table-wrap { overflow-x: auto; }
 .data-table {
     width: 100%;
@@ -256,6 +253,6 @@ body {
 }
 .data-table tr:hover td { background: var(--c-bg); }
 
-/* ── Utilitaires ─────────────────────────────── */
+
 .hidden { display: none !important; }
 code { font-family: var(--font-mono); font-size: 12px; background: var(--c-gray-bg); padding: 1px 5px; border-radius: 4px; }
