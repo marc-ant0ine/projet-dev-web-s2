@@ -1,12 +1,9 @@
 <?php
-// ============================================================
-//  admin_action.php — MaisonSmart
-//  Gère les actions POST du module Administration
-// ============================================================
+
 session_start();
 require_once 'db.php';
 
-// Seul l'admin peut accéder
+
 if (($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: index.php');
     exit();
