@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-//  inscription.php — MaisonSmart
-// ============================================================
+
 session_start();
 require_once 'db.php';
 
@@ -15,14 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $naissance = $_POST['naissance'] ?? '';
     $role      = 'simple';
 
-    // Validation
+    
     if (empty($nom) || empty($prenom) || !$mail || empty($mdpBrut) || empty($naissance)) {
         $error = 'Veuillez remplir tous les champs correctement.';
     } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).{8,}$/', $mdpBrut)) {
         $error = 'Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.';
     } else {
         $pdo = getDB();
-        // Vérifier doublon email
+        
         $stmt = $pdo->prepare('SELECT id FROM utilisateurs WHERE mail = ?');
         $stmt->execute([$mail]);
         if ($stmt->fetch()) {
