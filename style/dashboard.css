@@ -1,6 +1,4 @@
-/* ============================================================
-   dashboard.css — MaisonSmart  (page principale, 4 modules)
-   ============================================================ */
+
 
 .dashboard {
     max-width: 1100px;
@@ -9,7 +7,7 @@
     flex: 1;
 }
 
-/* ── Navigation modules ──────────────────────── */
+
 .mod-nav {
     display: flex;
     gap: 6px;
@@ -39,7 +37,7 @@
 }
 .mod-icon { font-size: 14px; }
 
-/* ── Sections ────────────────────────────────── */
+
 .module { display: none; animation: fadeIn 0.2s ease; }
 .module.active { display: block; }
 
@@ -50,7 +48,7 @@
 .section-sub { font-size: 14px; color: var(--c-muted); margin-top: 3px; }
 .sub-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
 
-/* ── Filtres module Info ─────────────────────── */
+
 .filters-bar {
     display: flex;
     gap: 12px;
@@ -82,7 +80,7 @@
 }
 .filter-search { flex: 2; }
 
-/* ── Grille objets info ──────────────────────── */
+
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -144,7 +142,7 @@
 }
 .signup-cta p { font-size: 14px; color: var(--c-muted); }
 
-/* ── Stats ───────────────────────────────────── */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -162,7 +160,7 @@
 .stat-value.ok    { color: var(--c-green); }
 .stat-value.alert { color: var(--c-red); }
 
-/* ── Graphique barres ────────────────────────── */
+
 .chart-card {
     background: var(--c-surface);
     border: 0.5px solid var(--c-border);
@@ -196,7 +194,7 @@
 }
 .bar-day { font-size: 11px; color: var(--c-muted); }
 
-/* ── Barre de tri ────────────────────────────── */
+
 .tri-bar {
     display: flex;
     align-items: center;
@@ -219,7 +217,7 @@
     background: var(--c-surface);
 }
 
-/* ── Cards capteurs ──────────────────────────── */
+
 .capteurs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -259,7 +257,7 @@
 }
 .capteur-meta { font-size: 12px; color: var(--c-hint); }
 
-/* ── Module Gestion ──────────────────────────── */
+
 .rooms-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -286,7 +284,7 @@
 .val-warn { color: var(--c-red) !important; }
 .val-ok   { color: var(--c-green) !important; }
 
-/* ── Module Admin ────────────────────────────── */
+
 .add-form {
     background: var(--c-surface);
     border: 0.5px solid var(--c-border);
