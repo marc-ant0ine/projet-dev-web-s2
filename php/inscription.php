@@ -13,14 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $naissance = $_POST['naissance'] ?? '';
     $role      = 'simple';
 
-    
     if (empty($nom) || empty($prenom) || !$mail || empty($mdpBrut) || empty($naissance)) {
         $error = 'Veuillez remplir tous les champs correctement.';
     } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).{8,}$/', $mdpBrut)) {
         $error = 'Le mot de passe doit contenir au moins 8 caractères, une lettre et un chiffre.';
     } else {
-        $pdo = getDB();
-        
+        $pdo  = getDB();
         $stmt = $pdo->prepare('SELECT id FROM utilisateurs WHERE mail = ?');
         $stmt->execute([$mail]);
         if ($stmt->fetch()) {
@@ -28,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $mdpHash = password_hash($mdpBrut, PASSWORD_BCRYPT);
             $ins = $pdo->prepare(
-                'INSERT INTO utilisateurs (nom, prenom, mail, mdp, naissance, role, statut)
-                 VALUES (?, ?, ?, ?, ?, ?, "actif")'
+                "INSERT INTO utilisateurs (nom, prenom, mail, mdp, naissance, role, statut)
+                 VALUES (?, ?, ?, ?, ?, ?, 'actif')"
             );
             $ins->execute([$nom, $prenom, $mail, $mdpHash, $naissance, $role]);
 
@@ -50,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription — MaisonSmart</title>
+   
     <link rel="stylesheet" href="style/main.css">
     <link rel="stylesheet" href="style/auth.css">
 </head>
@@ -102,6 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="auth-switch">Déjà un compte ? <a href="login.php">Se connecter</a></p>
     </div>
 </main>
+
+<?php include 'footer.php'; ?>
+</body>
+</html>
+
 
 <?php include 'footer.php'; ?>
 </body>
