@@ -44,8 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion — MaisonSmart</title>
-    <link rel="stylesheet" href="../style/main.css">
-    <link rel="stylesheet" href="../style/auth.css">
+    <!-- CORRECTION : chemin depuis php/ vers style/ au même niveau -->
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/auth.css">
 </head>
 <body>
 <?php include 'navbar.php'; ?>
