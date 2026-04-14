@@ -132,3 +132,4 @@ INSERT INTO utilisateurs (nom, prenom, mail, mdp, naissance, role, statut) VALUE
 ('Dupont', 'Marie',  'marie@maison.fr',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1988-07-24', 'complexe', 'actif'),
 ('Dupont', 'Théo',   'theo@maison.fr',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2010-11-05', 'simple',   'actif'),
 ('Temp',   'Invité', 'invite@tmp.fr',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '2000-01-01', 'simple',   'banni');
+
