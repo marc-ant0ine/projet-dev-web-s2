@@ -1,14 +1,18 @@
 <?php
-
-//  index.php   page principale
-
+// ============================================================
+//  index.php — MaisonSmart  (corrigé pour MAMP)
+//  CORRECTIONS :
+//  1. Chemins CSS/JS : '../style/' → 'style/' (structure à plat)
+//  2. Chemin JS : '../js/'       → 'js/'
+//  3. Requête pièces : guillemets doubles dans SQL → simples
+//  4. Toutes les requêtes exécutées seulement si la BDD répond
+// ============================================================
 session_start();
 require_once 'db.php';
 
 $role   = $_SESSION['role']   ?? 'visiteur';
 $prenom = $_SESSION['prenom'] ?? 'Visiteur';
 
-// Accès par rôle
 $access = [
     'visiteur' => ['info'],
     'simple'   => ['info', 'visu'],
@@ -19,7 +23,7 @@ $allowed = $access[$role] ?? ['info'];
 
 $pdo = getDB();
 
-
+// ── Module Information ──────────────────────────────────────
 $infoObjets = $pdo->query(
     'SELECT o.id, o.nom, o.type, o.unite, p.nom AS piece
      FROM objets_connectes o
@@ -28,13 +32,16 @@ $infoObjets = $pdo->query(
      ORDER BY o.nom'
 )->fetchAll();
 
+// ── Module Visualisation ────────────────────────────────────
 $dernieresMesures = $pdo->query(
     'SELECT d.objet_id, o.nom, p.nom AS piece, o.type, o.unite,
             d.valeur, d.statut, d.enregistre_le
      FROM donnees_capteurs d
      INNER JOIN (
-         SELECT objet_id, MAX(enregistre_le) AS mx FROM donnees_capteurs GROUP BY objet_id
-     ) latest ON d.objet_id = latest.objet_id AND d.enregistre_le = latest.mx
+         SELECT objet_id, MAX(enregistre_le) AS mx
+         FROM donnees_capteurs GROUP BY objet_id
+     ) latest ON d.objet_id = latest.objet_id
+               AND d.enregistre_le = latest.mx
      INNER JOIN objets_connectes o ON o.id = d.objet_id
      LEFT JOIN pieces p ON o.piece_id = p.id
      ORDER BY d.statut DESC, o.nom'
@@ -43,41 +50,45 @@ $dernieresMesures = $pdo->query(
 $consoSemaine = $pdo->query(
     "SELECT jour, SUM(valeur) AS total
      FROM consommation
-     WHERE type_conso = 'energie' AND jour >= CURDATE() - INTERVAL 6 DAY
+     WHERE type_conso = 'energie'
+       AND jour >= CURDATE() - INTERVAL 6 DAY
      GROUP BY jour ORDER BY jour"
 )->fetchAll();
 
 $statsGlobales = $pdo->query(
     "SELECT
-        (SELECT COUNT(*) FROM objets_connectes WHERE actif = 1)              AS nb_actifs,
+        (SELECT COUNT(*) FROM objets_connectes WHERE actif = 1) AS nb_actifs,
         (SELECT COUNT(*) FROM donnees_capteurs
          WHERE statut IN ('warn','alert')
-           AND enregistre_le >= NOW() - INTERVAL 24 HOUR)                    AS nb_alertes,
+           AND enregistre_le >= NOW() - INTERVAL 24 HOUR)       AS nb_alertes,
         (SELECT IFNULL(SUM(valeur),0) FROM consommation
-         WHERE type_conso='energie' AND jour = CURDATE())                    AS conso_energie,
+         WHERE type_conso = 'energie' AND jour = CURDATE())      AS conso_energie,
         (SELECT IFNULL(SUM(valeur),0) FROM consommation
-         WHERE type_conso='eau' AND jour = CURDATE())                        AS conso_eau"
+         WHERE type_conso = 'eau' AND jour = CURDATE())          AS conso_eau"
 )->fetch();
 
-
+// ── Module Gestion ──────────────────────────────────────────
+// CORRECTION 3 : guillemets doubles dans SQL remplacés par simples
+// MySQL accepte les doubles, mais certaines configs MAMP/PDO strict les rejettent
 $pieces = $pdo->query(
-    'SELECT p.id, p.nom,
+    "SELECT p.id, p.nom,
             (SELECT d.valeur FROM donnees_capteurs d
              INNER JOIN objets_connectes o ON o.id = d.objet_id
-             WHERE o.piece_id = p.id AND o.type = "confort"
+             WHERE o.piece_id = p.id AND o.type = 'confort'
              ORDER BY d.enregistre_le DESC LIMIT 1) AS temp,
             (SELECT d.valeur FROM donnees_capteurs d
              INNER JOIN objets_connectes o ON o.id = d.objet_id
-             WHERE o.piece_id = p.id AND o.type = "securite" AND o.unite = "ppm"
+             WHERE o.piece_id = p.id AND o.type = 'securite' AND o.unite = 'ppm'
              ORDER BY d.enregistre_le DESC LIMIT 1) AS co2
-     FROM pieces p ORDER BY p.etage, p.nom'
+     FROM pieces p ORDER BY p.etage, p.nom"
 )->fetchAll();
 
 $accesLog = $pdo->query(
     'SELECT * FROM acces ORDER BY enregistre_le DESC LIMIT 10'
 )->fetchAll();
 
-
+// ── Module Administration ────────────────────────────────────
+$users = $objetsAdmin = [];
 if (in_array('admin', $allowed)) {
     $users       = $pdo->query('SELECT * FROM utilisateurs ORDER BY role, nom')->fetchAll();
     $objetsAdmin = $pdo->query(
@@ -92,15 +103,15 @@ if (in_array('admin', $allowed)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaisonSmart — Tableau de bord</title>
-    <link rel="stylesheet" href="../style/main.css">
-    <link rel="stylesheet" href="../style/dashboard.css">
+    <!-- CORRECTION 1 : chemins relatifs depuis le dossier php/ -->
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/dashboard.css">
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
 <main class="dashboard">
 
- 
     <nav class="mod-nav">
         <button class="mod-btn active" data-mod="info">
             <span class="mod-icon">&#9432;</span> Information
@@ -122,13 +133,12 @@ if (in_array('admin', $allowed)) {
         <?php endif; ?>
     </nav>
 
-
+    <!-- MODULE INFORMATION -->
     <section class="module active" id="mod-info">
         <div class="section-header">
             <h2>Objets connectés — accès libre</h2>
             <p class="section-sub">Consultez les appareils de la maison sans vous connecter.</p>
         </div>
-
 
         <div class="filters-bar">
             <div class="filter-group">
@@ -146,7 +156,9 @@ if (in_array('admin', $allowed)) {
                 <select id="f-piece" onchange="filterInfo()">
                     <option value="">Toutes les pièces</option>
                     <?php foreach (array_unique(array_column($infoObjets, 'piece')) as $p): ?>
-                        <option value="<?= htmlspecialchars($p) ?>"><?= htmlspecialchars($p) ?></option>
+                        <option value="<?= htmlspecialchars((string)$p) ?>">
+                            <?= htmlspecialchars((string)$p) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -161,7 +173,7 @@ if (in_array('admin', $allowed)) {
             <?php foreach ($infoObjets as $obj): ?>
             <div class="info-card"
                  data-type="<?= htmlspecialchars($obj['type']) ?>"
-                 data-piece="<?= htmlspecialchars($obj['piece']) ?>"
+                 data-piece="<?= htmlspecialchars((string)($obj['piece'] ?? '')) ?>"
                  data-nom="<?= strtolower(htmlspecialchars($obj['nom'])) ?>">
                 <div class="info-card-type type-<?= htmlspecialchars($obj['type']) ?>">
                     <?= htmlspecialchars(ucfirst($obj['type'])) ?>
@@ -185,7 +197,7 @@ if (in_array('admin', $allowed)) {
         <?php endif; ?>
     </section>
 
-    
+    <!-- MODULE VISUALISATION -->
     <?php if (in_array('visu', $allowed)): ?>
     <section class="module" id="mod-visu">
         <div class="section-header">
@@ -195,37 +207,37 @@ if (in_array('admin', $allowed)) {
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Appareils actifs</div>
-                <div class="stat-value ok"><?= $statsGlobales['nb_actifs'] ?></div>
+                <div class="stat-value ok"><?= (int)$statsGlobales['nb_actifs'] ?></div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Alertes (24h)</div>
                 <div class="stat-value <?= $statsGlobales['nb_alertes'] > 0 ? 'alert' : 'ok' ?>">
-                    <?= $statsGlobales['nb_alertes'] ?>
+                    <?= (int)$statsGlobales['nb_alertes'] ?>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Énergie aujourd'hui (kWh)</div>
-                <div class="stat-value"><?= number_format($statsGlobales['conso_energie'], 1) ?></div>
+                <div class="stat-value"><?= number_format((float)$statsGlobales['conso_energie'], 1) ?></div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Eau aujourd'hui (L)</div>
-                <div class="stat-value"><?= number_format($statsGlobales['conso_eau'], 1) ?></div>
+                <div class="stat-value"><?= number_format((float)$statsGlobales['conso_eau'], 1) ?></div>
             </div>
         </div>
 
-       
         <div class="chart-card">
             <h3>Consommation électrique — 7 derniers jours (kWh)</h3>
             <div class="chart-bars" id="chart-bars">
                 <?php
-                $maxConso = max(array_column($consoSemaine, 'total') ?: [1]);
-                $jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+                $jours  = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+                $totaux = array_column($consoSemaine, 'total');
+                $maxConso = !empty($totaux) ? max($totaux) : 1;
                 foreach ($consoSemaine as $c):
-                    $pct = round(($c['total'] / $maxConso) * 100);
+                    $pct    = round(($c['total'] / $maxConso) * 100);
                     $libelle = $jours[date('N', strtotime($c['jour'])) - 1];
                 ?>
                 <div class="bar-col">
-                    <span class="bar-val"><?= number_format($c['total'], 1) ?></span>
+                    <span class="bar-val"><?= number_format((float)$c['total'], 1) ?></span>
                     <div class="bar-fill" style="height: <?= $pct ?>%"></div>
                     <span class="bar-day"><?= $libelle ?></span>
                 </div>
@@ -233,7 +245,6 @@ if (in_array('admin', $allowed)) {
             </div>
         </div>
 
-   
         <div class="tri-bar">
             <label for="tri-capteurs">Trier les capteurs :</label>
             <select id="tri-capteurs" onchange="applySorting()">
@@ -262,21 +273,20 @@ if (in_array('admin', $allowed)) {
                     <?= htmlspecialchars($m['valeur']) ?>
                     <span class="capteur-unite"><?= htmlspecialchars($m['unite']) ?></span>
                 </div>
-                <div class="capteur-meta"><?= htmlspecialchars($m['piece']) ?> · <?= htmlspecialchars($m['type']) ?></div>
+                <div class="capteur-meta"><?= htmlspecialchars((string)($m['piece'] ?? '')) ?> · <?= htmlspecialchars($m['type']) ?></div>
             </div>
             <?php endforeach; ?>
         </div>
     </section>
     <?php endif; ?>
 
-   
+    <!-- MODULE GESTION -->
     <?php if (in_array('gestion', $allowed)): ?>
     <section class="module" id="mod-gestion">
         <div class="section-header">
             <h2>Gestion de la maison</h2>
         </div>
 
-        <!-- Vue par pièce -->
         <h3 class="sub-title">Températures &amp; CO₂ par pièce</h3>
         <div class="rooms-grid">
             <?php foreach ($pieces as $piece): ?>
@@ -288,18 +298,17 @@ if (in_array('admin', $allowed)) {
                 </div>
                 <div class="room-row">
                     <span>CO₂</span>
-                    <span class="<?= ($piece['co2'] ?? 0) > 800 ? 'val-warn' : 'val-ok' ?>">
+                    <span class="<?= (($piece['co2'] ?? 0) > 800) ? 'val-warn' : 'val-ok' ?>">
                         <?= $piece['co2'] ? htmlspecialchars($piece['co2']) . ' ppm' : '—' ?>
                     </span>
                 </div>
                 <?php if ($role === 'complexe' || $role === 'admin'): ?>
-                <a href="gestion_piece.php?id=<?= $piece['id'] ?>" class="btn btn-sm">Gérer</a>
+                <a href="gestion_piece.php?id=<?= (int)$piece['id'] ?>" class="btn btn-sm">Gérer</a>
                 <?php endif; ?>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <!-- Journal des accès -->
         <h3 class="sub-title" style="margin-top: 2rem">Journal des accès</h3>
         <div class="table-wrap">
             <table class="data-table">
@@ -325,9 +334,7 @@ if (in_array('admin', $allowed)) {
     </section>
     <?php endif; ?>
 
-    <!-- ═══════════════════════════════════════════════════ -->
-    <!-- MODULE ADMINISTRATION                               -->
-    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- MODULE ADMINISTRATION -->
     <?php if (in_array('admin', $allowed)): ?>
     <section class="module" id="mod-admin">
         <div class="section-header">
@@ -348,7 +355,7 @@ if (in_array('admin', $allowed)) {
                         <td>
                             <form method="POST" action="admin_action.php" style="display:inline">
                                 <input type="hidden" name="action" value="change_role">
-                                <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
+                                <input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
                                 <select name="role" onchange="this.form.submit()" class="select-inline">
                                     <?php foreach (['simple','complexe','admin'] as $r): ?>
                                     <option value="<?= $r ?>" <?= $u['role'] === $r ? 'selected' : '' ?>>
@@ -364,7 +371,7 @@ if (in_array('admin', $allowed)) {
                         <td>
                             <form method="POST" action="admin_action.php" style="display:inline">
                                 <input type="hidden" name="action" value="toggle_ban">
-                                <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
+                                <input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <?= $u['statut'] === 'banni' ? 'Débannir' : 'Bannir' ?>
                                 </button>
@@ -395,7 +402,7 @@ if (in_array('admin', $allowed)) {
                         <td>
                             <form method="POST" action="admin_action.php" style="display:inline">
                                 <input type="hidden" name="action" value="toggle_objet">
-                                <input type="hidden" name="objet_id" value="<?= $o['id'] ?>">
+                                <input type="hidden" name="objet_id" value="<?= (int)$o['id'] ?>">
                                 <button type="submit" class="btn btn-sm">
                                     <?= $o['actif'] ? 'Désactiver' : 'Activer' ?>
                                 </button>
@@ -407,7 +414,6 @@ if (in_array('admin', $allowed)) {
             </table>
         </div>
 
-        <!-- Ajout d'un objet connecté -->
         <h3 class="sub-title" style="margin-top: 2rem">Ajouter un appareil</h3>
         <form method="POST" action="admin_action.php" class="add-form">
             <input type="hidden" name="action" value="add_objet">
@@ -430,7 +436,7 @@ if (in_array('admin', $allowed)) {
                     <select name="piece_id">
                         <option value="">— Aucune —</option>
                         <?php foreach ($pieces as $p): ?>
-                        <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nom']) ?></option>
+                        <option value="<?= (int)$p['id'] ?>"><?= htmlspecialchars($p['nom']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -447,6 +453,8 @@ if (in_array('admin', $allowed)) {
 </main>
 
 <?php include 'footer.php'; ?>
-<script src="../js/main.js"></script>
+<!-- CORRECTION 2 : chemin JS corrigé -->
+<script src="js/main.js"></script>
 </body>
 </html>
+
