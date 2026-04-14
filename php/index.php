@@ -1,12 +1,5 @@
 <?php
-// ============================================================
-//  index.php — MaisonSmart  (corrigé pour MAMP)
-//  CORRECTIONS :
-//  1. Chemins CSS/JS : '../style/' → 'style/' (structure à plat)
-//  2. Chemin JS : '../js/'       → 'js/'
-//  3. Requête pièces : guillemets doubles dans SQL → simples
-//  4. Toutes les requêtes exécutées seulement si la BDD répond
-// ============================================================
+
 session_start();
 require_once 'db.php';
 
