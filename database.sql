@@ -1,13 +1,12 @@
--- =====================================================
+
 -- SMART HOME PLATFORM - Base de Données
--- =====================================================
+
 
 CREATE DATABASE IF NOT EXISTS smarthome_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE smarthome_db;
 
--- =====================================================
 -- TABLE: utilisateurs
--- =====================================================
+
 CREATE TABLE utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) UNIQUE NOT NULL,
@@ -34,9 +33,9 @@ CREATE TABLE utilisateurs (
     INDEX idx_statut (statut)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: categories_objets
--- =====================================================
+
 CREATE TABLE categories_objets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -45,9 +44,9 @@ CREATE TABLE categories_objets (
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: pieces
--- =====================================================
+
 CREATE TABLE pieces (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -57,9 +56,9 @@ CREATE TABLE pieces (
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: objets_connectes
--- =====================================================
+
 CREATE TABLE objets_connectes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_unique VARCHAR(50) UNIQUE NOT NULL,
@@ -87,9 +86,9 @@ CREATE TABLE objets_connectes (
     INDEX idx_piece (piece_id)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: attributs_objets (valeurs dynamiques)
--- =====================================================
+
 CREATE TABLE attributs_objets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     objet_id INT NOT NULL,
@@ -102,9 +101,9 @@ CREATE TABLE attributs_objets (
     INDEX idx_objet (objet_id)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: historique_donnees
--- =====================================================
+
 CREATE TABLE historique_donnees (
     id INT AUTO_INCREMENT PRIMARY KEY,
     objet_id INT NOT NULL,
@@ -115,9 +114,9 @@ CREATE TABLE historique_donnees (
     INDEX idx_objet_time (objet_id, timestamp)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: historique_connexions
--- =====================================================
+
 CREATE TABLE historique_connexions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
@@ -130,9 +129,9 @@ CREATE TABLE historique_connexions (
     INDEX idx_user_time (utilisateur_id, timestamp)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: actions_utilisateurs
--- =====================================================
+
 CREATE TABLE actions_utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
@@ -146,9 +145,9 @@ CREATE TABLE actions_utilisateurs (
     INDEX idx_user_time (utilisateur_id, timestamp)
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: demandes_suppression (complexe → admin)
--- =====================================================
+
 CREATE TABLE demandes_suppression (
     id INT AUTO_INCREMENT PRIMARY KEY,
     demandeur_id INT NOT NULL,
@@ -161,9 +160,9 @@ CREATE TABLE demandes_suppression (
     FOREIGN KEY (objet_id) REFERENCES objets_connectes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: actualites
--- =====================================================
+
 CREATE TABLE actualites (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(200) NOT NULL,
@@ -175,9 +174,9 @@ CREATE TABLE actualites (
     FOREIGN KEY (auteur_id) REFERENCES utilisateurs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- TABLE: rapports
--- =====================================================
+
 CREATE TABLE rapports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(200),
@@ -190,9 +189,9 @@ CREATE TABLE rapports (
     FOREIGN KEY (cree_par) REFERENCES utilisateurs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- =====================================================
+
 -- DONNÉES INITIALES
--- =====================================================
+
 
 -- Catégories
 INSERT INTO categories_objets (nom, description, icone) VALUES
@@ -224,7 +223,6 @@ INSERT INTO objets_connectes (id_unique, nom, description, marque, modele, type_
 ('LAMP_SAL_02','Lampe Salon Appoint','Lampe de sol connectée','Philips','Hue Go','Zigbee','fort','actif',2,1,NULL,'v2.4','192.168.1.21','AA:BB:CC:DD:EE:04',NULL),
 ('LAMP_CUI_01','Lumière Cuisine','Bandeau LED sous meuble','IKEA','Trådfri','Zigbee','moyen','actif',2,2,NULL,'v1.8','192.168.1.22','AA:BB:CC:DD:EE:05',NULL),
 ('CAM_ENTREE_01','Caméra Entrée','Caméra surveillance extérieure','Ring','Pro 2','Wi-Fi','fort','actif',3,NULL,NULL,'v5.1.0','192.168.1.30','AA:BB:CC:DD:EE:06',NULL),
-('SERRURE_01','Serrure Connectée','Serrure porte principale','Yale','Linus L2','Bluetooth','fort','actif',3,NULL,65,'v2.0.3',NULL,'AA:BB:CC:DD:EE:07',NULL),
 ('MACHINE_LAV_01','Machine à Laver','Lave-linge connecté 9kg','Samsung','WW90T','Wi-Fi','fort','actif',4,2,NULL,'v1.5','192.168.1.40','AA:BB:CC:DD:EE:08',NULL),
 ('FOUR_01','Four Connecté','Four multifonction connecté','Bosch','HBG7','Wi-Fi','moyen','actif',4,2,NULL,'v2.1','192.168.1.41','AA:BB:CC:DD:EE:09',NULL),
 ('FRIGO_01','Réfrigérateur','Réfrigérateur smart avec caméra','LG','InstaView','Wi-Fi','fort','actif',4,2,NULL,'v3.0','192.168.1.42','AA:BB:CC:DD:EE:10',NULL),
