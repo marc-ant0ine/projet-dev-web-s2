@@ -74,14 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // RACCOURCI CLAVIER RECHERCHE
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      const inp = document.querySelector('.search-bar input');
-      if (inp) { inp.focus(); inp.select(); }
-    }
-  });
+
 
   // TOPBAR SHADOW ON SCROLL
   const topbar = document.querySelector('.topbar');
