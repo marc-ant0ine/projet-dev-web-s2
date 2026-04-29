@@ -74,8 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-
   // TOPBAR SHADOW ON SCROLL
   const topbar = document.querySelector('.topbar');
   if (topbar) {

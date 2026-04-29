@@ -156,11 +156,61 @@ function logConnexion(int $userId): void {
 }
 
 function sendValidationEmail(string $email, string $token, string $prenom): bool {
-    $lien = SITE_URL . "/valider-inscription.php?token=" . urlencode($token);
-    $sujet = "Validez votre inscription - " . SITE_NAME;
-    $message = "Bonjour $prenom,\n\nMerci de vous être inscrit sur " . SITE_NAME . ".\n\nCliquez sur ce lien pour valider votre inscription :\n$lien\n\nCe lien est valable 24h.\n\nL'équipe SmartHome";
-    $headers = "From: " . MAIL_FROM_NAME . " <" . MAIL_FROM . ">\r\nContent-Type: text/plain; charset=UTF-8";
-    return mail($email, $sujet, $message, $headers);
+    require_once __DIR__ . '/PHPMailer.php';
+    require_once __DIR__ . '/SMTP.php';
+    require_once __DIR__ . '/Exception.php';
+
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+
+    try {
+        // Connexion via Gmail
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'adem.gluntz@gmail.com';   // ton email Gmail
+        $mail->Password   = 'eynf ccyh hsar rano';     // le mot de passe d'application (avec les espaces)
+        $mail->SMTPSecure = 'tls';
+        $mail->Port       = 587;
+        $mail->CharSet    = 'UTF-8';
+
+        // Expéditeur et destinataire
+        $mail->setFrom('adem.gluntz@gmail.com', 'SmartHome');
+        $mail->addAddress($email, $prenom);
+
+        // Contenu
+        $lien = SITE_URL . '/valider-inscription.php?token=' . urlencode($token);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Validez votre inscription — SmartHome';
+        $mail->Body    = "
+            <div style='font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px'>
+                <h2 style='color:#58d8ff'>🏠 SmartHome</h2>
+                <p>Bonjour <strong>{$prenom}</strong>,</p>
+                <p>Merci de vous être inscrit sur la plateforme SmartHome !</p>
+                <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
+                <a href='{$lien}'
+                   style='display:inline-block;padding:12px 24px;background:#58d8ff;
+                          color:#0d1117;border-radius:8px;text-decoration:none;
+                          font-weight:bold;margin:16px 0'>
+                    ✅ Activer mon compte
+                </a>
+                <p style='color:#888;font-size:12px;margin-top:16px'>
+                    Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>
+                    <a href='{$lien}'>{$lien}</a>
+                </p>
+                <hr style='border:none;border-top:1px solid #eee;margin:20px 0'>
+                <p style='color:#aaa;font-size:11px'>SmartHome — Projet ING1 2025-2026</p>
+            </div>
+        ";
+        $mail->AltBody = "Bonjour {$prenom},\n\nActivez votre compte SmartHome ici :\n{$lien}";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log('Erreur envoi email : ' . $mail->ErrorInfo);
+        return false;
+    }
 }
 
 // Générer un token unique
