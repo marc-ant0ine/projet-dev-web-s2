@@ -1,12 +1,13 @@
-
+-- =====================================================
 -- SMART HOME PLATFORM - Base de Données
-
+-- =====================================================
 
 CREATE DATABASE IF NOT EXISTS smarthome_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE smarthome_db;
 
+-- =====================================================
 -- TABLE: utilisateurs
-
+-- =====================================================
 CREATE TABLE utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) UNIQUE NOT NULL,
@@ -33,9 +34,9 @@ CREATE TABLE utilisateurs (
     INDEX idx_statut (statut)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: categories_objets
-
+-- =====================================================
 CREATE TABLE categories_objets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -44,9 +45,9 @@ CREATE TABLE categories_objets (
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: pieces
-
+-- =====================================================
 CREATE TABLE pieces (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -56,9 +57,9 @@ CREATE TABLE pieces (
     date_creation DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: objets_connectes
-
+-- =====================================================
 CREATE TABLE objets_connectes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_unique VARCHAR(50) UNIQUE NOT NULL,
@@ -86,9 +87,9 @@ CREATE TABLE objets_connectes (
     INDEX idx_piece (piece_id)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: attributs_objets (valeurs dynamiques)
-
+-- =====================================================
 CREATE TABLE attributs_objets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     objet_id INT NOT NULL,
@@ -101,9 +102,9 @@ CREATE TABLE attributs_objets (
     INDEX idx_objet (objet_id)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: historique_donnees
-
+-- =====================================================
 CREATE TABLE historique_donnees (
     id INT AUTO_INCREMENT PRIMARY KEY,
     objet_id INT NOT NULL,
@@ -114,9 +115,9 @@ CREATE TABLE historique_donnees (
     INDEX idx_objet_time (objet_id, timestamp)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: historique_connexions
-
+-- =====================================================
 CREATE TABLE historique_connexions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
@@ -129,9 +130,9 @@ CREATE TABLE historique_connexions (
     INDEX idx_user_time (utilisateur_id, timestamp)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: actions_utilisateurs
-
+-- =====================================================
 CREATE TABLE actions_utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT NOT NULL,
@@ -145,9 +146,9 @@ CREATE TABLE actions_utilisateurs (
     INDEX idx_user_time (utilisateur_id, timestamp)
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: demandes_suppression (complexe → admin)
-
+-- =====================================================
 CREATE TABLE demandes_suppression (
     id INT AUTO_INCREMENT PRIMARY KEY,
     demandeur_id INT NOT NULL,
@@ -160,9 +161,9 @@ CREATE TABLE demandes_suppression (
     FOREIGN KEY (objet_id) REFERENCES objets_connectes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: actualites
-
+-- =====================================================
 CREATE TABLE actualites (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(200) NOT NULL,
@@ -174,9 +175,9 @@ CREATE TABLE actualites (
     FOREIGN KEY (auteur_id) REFERENCES utilisateurs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- TABLE: rapports
-
+-- =====================================================
 CREATE TABLE rapports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(200),
@@ -189,9 +190,9 @@ CREATE TABLE rapports (
     FOREIGN KEY (cree_par) REFERENCES utilisateurs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-
+-- =====================================================
 -- DONNÉES INITIALES
-
+-- =====================================================
 
 -- Catégories
 INSERT INTO categories_objets (nom, description, icone) VALUES
@@ -220,7 +221,6 @@ INSERT INTO objets_connectes (id_unique, nom, description, marque, modele, type_
 ('THERMO_SAL_01','Thermostat Salon','Thermostat intelligent principal','Netatmo','NAT-TH01','Wi-Fi','fort','actif',1,1,NULL,'v3.2.1','192.168.1.10','AA:BB:CC:DD:EE:01',NULL),
 ('THERMO_CH_01','Thermostat Chambre','Thermostat chambre principale','Netatmo','NAT-TH01','Wi-Fi','fort','actif',1,3,NULL,'v3.2.1','192.168.1.11','AA:BB:CC:DD:EE:02',NULL),
 ('LAMP_SAL_01','Lampe Salon Principal','Ampoule connectée RGB plafond','Philips','Hue A21','Zigbee','fort','actif',2,1,NULL,'v2.4','192.168.1.20','AA:BB:CC:DD:EE:03',NULL),
-('LAMP_SAL_02','Lampe Salon Appoint','Lampe de sol connectée','Philips','Hue Go','Zigbee','fort','actif',2,1,NULL,'v2.4','192.168.1.21','AA:BB:CC:DD:EE:04',NULL),
 ('LAMP_CUI_01','Lumière Cuisine','Bandeau LED sous meuble','IKEA','Trådfri','Zigbee','moyen','actif',2,2,NULL,'v1.8','192.168.1.22','AA:BB:CC:DD:EE:05',NULL),
 ('CAM_ENTREE_01','Caméra Entrée','Caméra surveillance extérieure','Ring','Pro 2','Wi-Fi','fort','actif',3,NULL,NULL,'v5.1.0','192.168.1.30','AA:BB:CC:DD:EE:06',NULL),
 ('MACHINE_LAV_01','Machine à Laver','Lave-linge connecté 9kg','Samsung','WW90T','Wi-Fi','fort','actif',4,2,NULL,'v1.5','192.168.1.40','AA:BB:CC:DD:EE:08',NULL),
@@ -231,7 +231,6 @@ INSERT INTO objets_connectes (id_unique, nom, description, marque, modele, type_
 ('TV_SAL_01','TV Salon','Téléviseur OLED 65 pouces','LG','OLED65C2','Wi-Fi','fort','inactif',6,1,NULL,'v03.33','192.168.1.50','AA:BB:CC:DD:EE:13',NULL),
 ('ENCEINTE_01','Enceinte Connectée','Enceinte smart avec assistant','Sonos','Era 300','Wi-Fi','fort','actif',6,1,NULL,'v15.4','192.168.1.51','AA:BB:CC:DD:EE:14',NULL),
 ('COMPTEUR_01','Compteur Électrique','Compteur Linky connecté','Enedis','Linky 3.0','Wi-Fi','fort','actif',7,NULL,NULL,'v4.0','192.168.1.60','AA:BB:CC:DD:EE:15',NULL),
-('PRISE_BUR_01','Prise Bureau','Prise intelligente bureau','TP-Link','Tapo P110','Wi-Fi','fort','actif',7,7,NULL,'v1.3','192.168.1.61','AA:BB:CC:DD:EE:16',NULL),
 ('VOLET_SAL_01','Volet Salon','Volet roulant motorisé salon','Somfy','Tahoma','Wi-Fi','fort','actif',8,1,NULL,'v2.5','192.168.1.70','AA:BB:CC:DD:EE:17',NULL),
 ('VOLET_CH_01','Volet Chambre','Volet roulant chambre principale','Somfy','Tahoma','Wi-Fi','fort','actif',8,3,NULL,'v2.5','192.168.1.71','AA:BB:CC:DD:EE:18',NULL),
 ('CLIM_SAL_01','Climatiseur Salon','Climatiseur réversible','Daikin','FTXM35R','Wi-Fi','fort','inactif',8,1,NULL,'v3.1','192.168.1.72','AA:BB:CC:DD:EE:19',NULL),
